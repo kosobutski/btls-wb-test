@@ -12,7 +12,7 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth });
 
-export async function syncTariffs(): Promise<void> {
+export async function updateGoogleSheet(): Promise<void> {
     try {
         const tariffs = await knex("tariffs").select("*").orderBy("box_delivery_coef_expr", "asc");
 
