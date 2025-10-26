@@ -1,3 +1,4 @@
+// интерфейс записи о тарифах на одном складе
 export interface WarehouseTariff {
     boxDeliveryBase: string;
     boxDeliveryCoefExpr: string;
@@ -12,6 +13,7 @@ export interface WarehouseTariff {
     warehouseName: string;
 }
 
+// интерфейс ответа от WB API
 export interface TariffResponse {
     response: {
         data: {

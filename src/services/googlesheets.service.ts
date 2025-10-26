@@ -16,6 +16,7 @@ export async function updateGoogleSheets(): Promise<void> {
     try {
         const tariffs = await knex("tariffs").select("*").orderBy("box_delivery_coef_expr", "asc");
 
+        // заголовки столбцов таблиц
         const headers = [
             "ID",
             "Date",
@@ -34,6 +35,7 @@ export async function updateGoogleSheets(): Promise<void> {
             "Updated At",
         ];
 
+        // сбор данных о тарифах из БД
         const values = tariffs.map((tariff) => [
             tariff.id,
             tariff.date,
@@ -54,6 +56,7 @@ export async function updateGoogleSheets(): Promise<void> {
 
         const data = [headers, ...values];
 
+        // получение идентификаторов гугл таблиц
         const spreadsheetRecords = await knex("spreadsheets").select("spreadsheet_id");
 
         for (const record of spreadsheetRecords) {
@@ -65,6 +68,7 @@ export async function updateGoogleSheets(): Promise<void> {
 
             const sheetExists = spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === "stocks_coefs");
 
+            // если листа stocks_coefs в таблице нет, то создаем его
             if (!sheetExists) {
                 await sheets.spreadsheets.batchUpdate({
                     spreadsheetId,
@@ -82,6 +86,7 @@ export async function updateGoogleSheets(): Promise<void> {
                 });
             }
 
+            // запись в гугл таблицы
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
                 range: "stocks_coefs!A1",

@@ -1,6 +1,7 @@
 import knex from "#postgres/knex.js";
 import { WarehouseTariff } from "#utils/interfaces.js";
 
+// функция для парсинга float-чисел
 const parseDecimal = (value: string | null | undefined): number | null => {
     if (!value) return null;
     const parsed = parseFloat(value.replace(",", "."));
@@ -9,6 +10,7 @@ const parseDecimal = (value: string | null | undefined): number | null => {
 
 export async function saveTariffs(tariffs: WarehouseTariff[], date: string): Promise<void> {
     try {
+        // сбор данных
         const mappedTariffs = tariffs.map((tariff) => ({
             date,
             warehouse_name: tariff.warehouseName,
@@ -24,6 +26,7 @@ export async function saveTariffs(tariffs: WarehouseTariff[], date: string): Pro
             box_storage_liter: parseDecimal(tariff.boxStorageLiter),
         }));
 
+        // запись данных
         await knex("tariffs").insert(mappedTariffs).onConflict(["date", "warehouse_name"]).merge();
         console.log(`Tariffs are successfully inserted to database at ${new Date().toLocaleString()}`);
     } catch (error) {

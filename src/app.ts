@@ -1,6 +1,5 @@
 import knex from "#postgres/knex.js";
 import { startScheduler } from "#scheduler/index.js";
-import { updateGoogleSheets } from "#services/googlesheets.service.js";
 
 await knex.migrate.latest();
 await knex.seed.run();
