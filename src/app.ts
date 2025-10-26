@@ -8,5 +8,3 @@ await knex.seed.run();
 console.log("All migrations and seeds have been run");
 
 startScheduler();
-
-updateGoogleSheets();
