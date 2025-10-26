@@ -12,7 +12,7 @@ const auth = new google.auth.GoogleAuth({
 
 const sheets = google.sheets({ version: "v4", auth });
 
-export async function updateGoogleSheet(): Promise<void> {
+export async function updateGoogleSheets(): Promise<void> {
     try {
         const tariffs = await knex("tariffs").select("*").orderBy("box_delivery_coef_expr", "asc");
 
@@ -54,37 +54,44 @@ export async function updateGoogleSheet(): Promise<void> {
 
         const data = [headers, ...values];
 
-        const spreadsheet = await sheets.spreadsheets.get({
-            spreadsheetId: env.SHEET_ID,
-        });
+        const spreadsheetRecords = await knex("spreadsheets").select("spreadsheet_id");
 
-        const sheetExists = spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === "stocks_coefs");
+        for (const record of spreadsheetRecords) {
+            const spreadsheetId = record.spreadsheet_id;
 
-        if (!sheetExists) {
-            await sheets.spreadsheets.batchUpdate({
-                spreadsheetId: env.SHEET_ID,
-                requestBody: {
-                    requests: [
-                        {
-                            addSheet: {
-                                properties: {
-                                    title: "stocks_coefs",
+            const spreadsheet = await sheets.spreadsheets.get({
+                spreadsheetId,
+            });
+
+            const sheetExists = spreadsheet.data.sheets?.some((sheet) => sheet.properties?.title === "stocks_coefs");
+
+            if (!sheetExists) {
+                await sheets.spreadsheets.batchUpdate({
+                    spreadsheetId,
+                    requestBody: {
+                        requests: [
+                            {
+                                addSheet: {
+                                    properties: {
+                                        title: "stocks_coefs",
+                                    },
                                 },
                             },
-                        },
-                    ],
+                        ],
+                    },
+                });
+            }
+
+            await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: "stocks_coefs!A1",
+                valueInputOption: "RAW",
+                requestBody: {
+                    values: data,
                 },
             });
+            console.log(`Google Spreadsheet ${spreadsheetId} is successfully updated at ${new Date().toLocaleString()}`);
         }
-
-        await sheets.spreadsheets.values.update({
-            spreadsheetId: env.SHEET_ID,
-            range: "stocks_coefs!A1",
-            valueInputOption: "RAW",
-            requestBody: {
-                values: data,
-            },
-        });
     } catch (error) {
         console.error("Error syncing tariffs to Google Sheets:", error);
         throw error;

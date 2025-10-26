@@ -25,6 +25,7 @@ export async function saveTariffs(tariffs: WarehouseTariff[], date: string): Pro
         }));
 
         await knex("tariffs").insert(mappedTariffs).onConflict(["date", "warehouse_name"]).merge();
+        console.log(`Tariffs are successfully inserted to database at ${new Date().toLocaleString()}`);
     } catch (error) {
         throw new Error(`Error while saving tariffs to database: ${error}`);
     }

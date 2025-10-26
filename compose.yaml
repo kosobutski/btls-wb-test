@@ -60,7 +60,6 @@ services:
             WB_API_KEY: ${WB_API_KEY}
             GOOGLE_SERVICE_EMAIL: ${GOOGLE_SERVICE_EMAIL}
             GOOGLE_PRIVATE_KEY: ${GOOGLE_PRIVATE_KEY}
-            SHEET_ID: ${SHEET_ID}
             NODE_ENV: production
 
         ports:

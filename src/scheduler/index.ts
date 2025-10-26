@@ -1,4 +1,4 @@
-import { updateGoogleSheet } from "#services/googlesheets.service.js";
+import { updateGoogleSheets } from "#services/googlesheets.service.js";
 import { syncTariffsWithDatabase } from "#services/sync.service.js";
 import schedule from "node-schedule";
 
@@ -8,7 +8,7 @@ export function startScheduler() {
     });
 
     schedule.scheduleJob("10 * * * *", async () => {
-        await updateGoogleSheet();
+        await updateGoogleSheets();
     });
 
     console.log("Scheduler started");
